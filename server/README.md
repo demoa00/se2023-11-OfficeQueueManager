@@ -2,9 +2,9 @@
 ## Services :
 This table is about the services of the office.
 ### Attributes:
-- ServiceID: Integer identifier (unique by default -> list lenght)
+- ServiceID: Integer identifier (unique by default -> list length)
 - ServiceName: Name of the service (unique if possible to avoid any misunderstanding)
-- ExtimatedTime: these values are setted by default. If the Admin wants to change them, he should have a dedicated query to update them 
+- ExtimatedTime: these values are set by default. If the Admin wants to change them, he should have a dedicated query to update them 
 ## Officier :
 This table represent the HR of the organization.
 ### Attributes:
