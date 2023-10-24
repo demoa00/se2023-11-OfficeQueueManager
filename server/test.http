@@ -1,0 +1,30 @@
+@APIURL=http://localhost:3001/api
+
+//GET LIST OF SERVICES' NAMES
+GET {{APIURL}}/services
+
+###
+
+//GET SERVICE TIME OF A SERVICE
+GET {{APIURL}}/Assistance/servicetime
+
+###
+
+//SET A NEW SERVICE TIME FOR A SPECIFIC SERVICE
+PUT {{APIURL}}/Expeditions/updatetime
+Content-Type: application/json
+
+{
+    "servicetime": 3
+}
+
+###
+
+//ADD A NEW SERVICE
+POST {{APIURL}}/services/add
+Content-Type: application/json
+
+{
+    "servicename": "Insurance",
+    "servicetime": 8
+}
