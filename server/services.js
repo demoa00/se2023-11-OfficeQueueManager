@@ -24,26 +24,26 @@ exports.GetServicesName = () => {
     });
 }
 
-exports.GetExtimatedTime = (servicename) => {
+exports.GetServiceTime = (serviceName) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT extimatedtime FROM Services WHERE servicename = ? ';
-        db.all(sql, [servicename], (err, rows) => {
+        const sql = 'SELECT servicetime FROM Services WHERE servicename = ? ';
+        db.all(sql, [serviceName], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const extimatedtime = rows.map((e) => ({
-                extimatedtime: e.extimatedtime
+            const servicetime = rows.map((e) => ({
+                servicetime: e.servicetime
             }
             ));
-            resolve(extimatedtime);
+            resolve(servicetime);
         });
     });
 }
 
-exports.SetNewExtimatedTime = (servicename, time) => {
+exports.SetNewServiceTime = (servicename, time) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE Services SET extimatedtime = ? WHERE servicename = ?';
+        const sql = 'UPDATE Services SET servicetime = ? WHERE servicename = ?';
         db.run(sql, [time, servicename], function (err) {
             if (err) {
                 reject(err);
@@ -56,8 +56,8 @@ exports.SetNewExtimatedTime = (servicename, time) => {
 
 exports.AddService = (service) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO Services(servicename, extimatedtime) VALUES(?, ?)';
-        db.run(sql, [service.servicename, service.extimatedtime], function (err) {
+        const sql = 'INSERT INTO Services(servicename, servicetime) VALUES(?, ?)';
+        db.run(sql, [service.servicename, service.servicetime], function (err) {
             if (err) {
                 reject(err);
                 return;
@@ -97,6 +97,25 @@ exports.RemoveService = (id) => {
                 return;
             } else
                 resolve(this.changes);
+        });
+    });
+}
+
+exports.GetServices = () => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM Services ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const services = rows.map((e) => ({
+                id: e.id,
+                servicename: e.servicename,
+                servicetime: e.servicetime
+            }
+            ));
+            resolve(services);
         });
     });
 }
