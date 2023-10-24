@@ -8,6 +8,11 @@ const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const cors = require('cors');
 
+//Variables related to the other JS files:
+const services = require('./services.js');
+const officiers = require('./officiers.js');
+const tickets = require('./ticketserved.js'); 
+
 const app = new express();
 const port = 3001;
 
@@ -57,7 +62,7 @@ const IsLoggedIn = (req, res, next) => {
 
 //Setup of the session
 app.use(session({
-  secret: 's3Cr3t$r!ng4th3S3$s10N', 
+  secret: 's3Cr3t$r!ng4th3S3$s10N',
   resave: false,
   saveUninitialized: false
 }));
@@ -65,12 +70,72 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-
-
 //Server activation:
 app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-  });
+  console.log(`Server listening at http://localhost:${port}`);
+});
+
+/* 
   
+  +--------------------------+
+  | SERVICE FUNCTIONS BELOW: | 
+  +--------------------------+
+
+*/
+
+app.get('/api/services', (req, res) => {
+  services.GetServicesName()
+    .then(services => res.json(services))
+    .catch(() => res.status(500).end());
+});
+
+app.get('/api/:servicename/servicetime', (req, res) => {
+  services.GetServiceTime(req.params.servicename)
+    .then(services => res.json(services))
+    .catch(() => res.status(500).end())
+});
+
+app.put('/api/:servicename/updatetime', IsLoggedIn, [/* check with express-validator if necessary */],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors)
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      try {
+        const service = {
+          servicename: req.params.servicename,
+          time: req.body.servicetime
+        }
+        const updateService = await services.SetNewServiceTime(service);
+        res.json(updateService);
+      } catch (err) {
+        console.log(err)
+        res.status(503).json({ error: `Database error during the edit of the page  ${req.params.servicename}.` });
+      }
+    }
+  }
+);
+
+app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if necessary */],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors)
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      try {
+        const service = {
+          servicename: req.body.servicename,
+          servicetime: req.body.servicetime
+        }
+        const newService = await services.AddService(service);
+        res.json(newService);
+      } catch (err) {
+        console.log(err)
+        res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
+      }
+    }
+
+  }
+);

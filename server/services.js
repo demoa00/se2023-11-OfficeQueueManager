@@ -41,10 +41,10 @@ exports.GetServiceTime = (serviceName) => {
     });
 }
 
-exports.SetNewServiceTime = (servicename, time) => {
+exports.SetNewServiceTime = (service) => {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE Services SET servicetime = ? WHERE servicename = ?';
-        db.run(sql, [time, servicename], function (err) {
+        db.run(sql, [service.time, service.servicename], function (err) {
             if (err) {
                 reject(err);
                 return;
