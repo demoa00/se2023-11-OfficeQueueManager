@@ -105,7 +105,7 @@ app.put('/api/:servicename/updatetime', IsLoggedIn, [/* check with express-valid
       try {
         const service = {
           servicename: req.params.servicename,
-          time: req.body.servicetime
+          servicetime: req.body.servicetime
         }
         const updateService = await services.SetNewServiceTime(service);
         res.json(updateService);
@@ -136,7 +136,6 @@ app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if ne
         res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
       }
     }
-
   }
 );
 

@@ -27,16 +27,12 @@ exports.GetServicesName = () => {
 exports.GetServiceTime = (serviceName) => {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT servicetime FROM Services WHERE servicename = ? ';
-        db.all(sql, [serviceName], (err, rows) => {
+        db.get(sql, [serviceName], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const servicetime = rows.map((e) => ({
-                servicetime: e.servicetime
-            }
-            ));
-            resolve(servicetime);
+            resolve({servicetime: rows.servicetime});
         });
     });
 }
@@ -44,7 +40,7 @@ exports.GetServiceTime = (serviceName) => {
 exports.SetNewServiceTime = (service) => {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE Services SET servicetime = ? WHERE servicename = ?';
-        db.run(sql, [service.time, service.servicename], function (err) {
+        db.run(sql, [service.servicetime, service.servicename], function (err) {
             if (err) {
                 reject(err);
                 return;
