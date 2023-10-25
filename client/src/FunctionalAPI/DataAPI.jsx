@@ -70,7 +70,16 @@ async function UpdateTicket(ticket) {
         });
 }
 
+async function GetNumberOfServicePerOfficier(id) {
+    const response = await fetch(URL + `/services/${id}`, { credentials: 'include' });
+    const obj = await response.json();
+    if (response.ok) {
+        return obj.numservices;
+    } else {
+        throw obj;
+    }
+}
 
-const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, AddService, NewTicket, UpdateTicket };
+const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, AddService, NewTicket, UpdateTicket, GetNumberOfServicePerOfficier };
 
 export default DataAPI;

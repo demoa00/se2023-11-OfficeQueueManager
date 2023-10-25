@@ -13,6 +13,7 @@ const dayjs = require('dayjs');
 const services = require('./services.js');
 const officiers = require('./officiers.js');
 const tickets = require('./ticketserved.js');
+const bridge = require('./bridge.js');
 
 /* 
   
@@ -270,4 +271,19 @@ app.delete('/api/sessions/current', IsLoggedIn, (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
+});
+
+/* 
+  
+  +-------------------------+
+  | BRIDGE FUNCTIONS BELOW: | 
+  +-------------------------+
+
+*/
+
+
+app.get('/api/services/:id', (req, res) => {
+  bridge.GetNumberOfServicePerOfficier(req.params.id)
+    .then(numservices => res.json(numservices))
+    .catch(() => res.status(500).end());
 });
