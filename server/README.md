@@ -26,6 +26,40 @@ This table should store all the ticket served. Empty by default.
 - ServiceTime: Time acquired from the "Services" table
 - RealTime: Effective amount of time required to serve a client
 
+# Index.js Funcionalities : 
+## GetServiceName : 
+### Route :
+- '/api/services'
+### Parameters :
+This function doesn't recieve any parameter
+### Results: 
+It returns a list of ServiceName, should be called when the display of the services is required (es: the list for the ticket creation)
+
+## GetServiceTime :
+### Route :
+- '/api/:servicename/servicetime'
+### Parameters : 
+- ServiceName : recieved to find the time associated to a certain service
+### Results:
+It returns the time associated to a service
+
+## SetNewServiceTime :
+### Route :
+- '/api/:servicename/updatetime'
+### Parameters :
+- Service : Object containing 2 fields {time, serviceName (research keyfor the tuple) }
+### Results :
+Update the time associated to a service
+
+## AddService : 
+### Route :
+- '/api/services/add'
+### Parameters :
+- Service : Object containing 2 fields {time, serviceName}
+### Results :
+Add a service into a new row, in a complete implementation should control that the serviceName, is not present yet and throw an error
+
+
 # POSSIBLE IMPLEMENTATIONS:
 Related to the problem given and all his stories some ideas are given below for the API implementation:
 

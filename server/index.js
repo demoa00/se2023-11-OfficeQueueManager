@@ -28,10 +28,10 @@ app.use(cors(corsOptions));
 
 //Local strategy implements httpOnly
 passport.use(new LocalStrategy(
-  function (username, password, done) {
-    users.getUser(username, password).then((user) => {
+  function (email, password, done) {
+    officiers.getUser(email, password).then((user) => {
       if (!user)
-        return done(null, false, { message: 'Incorrect username and/or password.' });
+        return done(null, false, { message: 'Incorrect email and/or password.' });
 
       return done(null, user);
     })
@@ -45,7 +45,7 @@ passport.serializeUser((user, done) => {
 
 //Deserializzazion:
 passport.deserializeUser((id, done) => {
-  users.getUserById(id)
+  officiers.getUserById(id)
     .then(user => {
       done(null, user);
     }).catch(err => {
@@ -139,3 +139,35 @@ app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if ne
 
   }
 );
+
+/* 
+  
+  +-------------------------------+
+  | TICKETSERVED FUNCTIONS BELOW: | 
+  +-------------------------------+
+
+*/
+
+app.post('/api/tickets/add', IsLoggedIn, [/* check with express-validator if necessary */],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors)
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      try {
+        const ticket = {
+          servicename: req.body.servicename,
+          servicetime: req.body.servicetime,
+          realtime: req.body.realtime
+        }
+        const newTicket = await tickets.AddTicketServed(ticket);
+        res.json(newTicket);
+      } catch (err) {
+        console.log(err)
+        res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
+      }
+    }
+  }
+);
+
