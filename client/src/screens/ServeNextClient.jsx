@@ -4,7 +4,7 @@ import '../style/serveNextClient.css'
 
 function ServeNextClient() {
     const [nuovoCliente, setNuovoCliente] = useState(null);
-    const [servizioInCorso, setServizioInCorso] = useState(false);
+    const [servizioInCorso, setServizioInCorso] = useState(true);
     const [tempoInizioServizio, setTempoInizioServizio] = useState(null);
     const [tempoFineServizio, setTempoFineServizio] = useState(null);
     const [tempoTrascorso, setTempoTrascorso] = useState(0);

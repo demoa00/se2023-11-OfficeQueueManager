@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap'
 import '../style/getTicket.css'
-import { getTicket } from '../API'
 
 function GetTicket() {
 
