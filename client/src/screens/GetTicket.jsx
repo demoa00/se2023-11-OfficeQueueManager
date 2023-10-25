@@ -78,8 +78,8 @@ function GetTicket() {
         </Col>
       </Row>
       <div className='buttonsContainer'>
-        <Button variant='outline-primary' className='me-3' onClick={()=>setSelectedService(null)}>Annulla</Button>
-        <Button variant='primary'>Prosegui</Button>
+        <Button variant='outline-primary' className='me-3' onClick={()=>setSelectedService(null)}>Cancel</Button>
+        <Button variant='primary'>Continue</Button>
       </div>
     </Container>
   )
