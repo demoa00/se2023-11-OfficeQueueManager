@@ -27,7 +27,7 @@ async function SetNewServiceTime(servicetime) {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ servicetime })
+        body: JSON.stringify(servicetime)
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
@@ -46,18 +46,31 @@ async function AddService(service) {
         });
 }
 
-async function AddTicketServed(ticketserved) {
+async function NewTicket(servicename) {
     const response = await fetch(URL + '/tickets/add', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ticketserved)
+        body: JSON.stringify(servicename)
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
         });
 }
 
-const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, AddService, AddTicketServed };
+async function UpdateTicket(ticket) {
+    const response = await fetch(URL + '/tickets/update', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticket)
+    })
+        .catch(function (error) {
+            console.log('Failed to store data on server: ', error);
+        });
+}
+
+
+const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, AddService, NewTicket, UpdateTicket };
 
 export default DataAPI;

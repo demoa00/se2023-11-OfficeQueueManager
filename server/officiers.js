@@ -25,8 +25,7 @@ exports.getUser = (email, password) => {
                     name: row.name,
                     surname: row.surname,
                     admin: row.admin,
-                    services: row.services
-                };
+                    };
 
                 const salt = row.salt;
                 crypto.scrypt(password, salt, 32, (err, hashedPassword) => {
@@ -60,7 +59,6 @@ exports.getUserById = (id) => {
                     surname: row.surname,
                     admin: row.admin,
                     email: row.email,
-                    services: row.services
                 }
                 resolve(user);
             }

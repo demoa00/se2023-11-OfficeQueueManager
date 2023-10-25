@@ -7,6 +7,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const cors = require('cors');
+const dayjs = require('dayjs');
 
 //Variables related to the other JS files:
 const services = require('./services.js');
@@ -117,7 +118,7 @@ app.get('/api/:servicename/servicetime', [
     .catch(() => res.status(500).end())
 });
 
-app.put('/api/:servicename/updatetime', IsLoggedIn, [
+app.put('/api/updatetime?servicename=value', IsLoggedIn, [
   param('servicename').isAlpha().isLength({ min: 1 }),
   body("servicetime").isInt({ min: 0 })
 ], async (req, res) => {
@@ -171,7 +172,7 @@ app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if ne
 
 */
 
-app.post('/api/tickets/add', [/* check with express-validator if necessary */],
+app.post('/api/tickets/add', IsLoggedIn, [ body("servicename").isAlpha().isLength({min : 1}) ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -181,10 +182,9 @@ app.post('/api/tickets/add', [/* check with express-validator if necessary */],
       try {
         const ticket = {
           servicename: req.body.servicename,
-          servicetime: req.body.servicetime,
-          realtime: req.body.realtime
+          servicetime: JSON.stringify(dayjs()),
         }
-        const newTicket = await tickets.AddTicketServed(ticket);
+        const newTicket = await tickets.NewTicket(ticket);
         res.json(newTicket);
       } catch (err) {
         console.log(err)
@@ -192,6 +192,27 @@ app.post('/api/tickets/add', [/* check with express-validator if necessary */],
       }
     }
   }
+);
+
+app.put('/api/tickets/update', IsLoggedIn, [/*express-validator check if necessary*/], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const ticket = {
+        id: req.body.id,
+        realtime: JSON.stringify(dayjs())
+      }
+      const updateTicket = await tickets.UpdateTicket(ticket);
+      res.json(updateTicket);
+    } catch (err) {
+      console.log(err)
+      res.status(503).json({ error: `Database error during the edit of the page  ${req.body.id}.` });
+    }
+  }
+}
 );
 
 /* 
