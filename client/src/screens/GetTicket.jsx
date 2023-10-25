@@ -71,8 +71,8 @@ function GetTicket() {
           className='mb-4'
           onMouseEnter={()=>{setHoveredService('F')}} 
           onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'F' ? setSelectedService('F') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'F' ? 'hovered' : ''} ${selectedService === 'F' ? 'selected' : ''}`}>
+          onClick={()=>{selectedService !== 'Insurance' ? setSelectedService('Insurance') : setSelectedService(null)}}>
+            <div className={`serviceContainer ${hoveredService === 'Insurance' ? 'hovered' : ''} ${selectedService === 'Insurance' ? 'selected' : ''}`}>
               <h2>Insurance</h2>
             </div>
         </Col>
