@@ -34,18 +34,6 @@ async function SetNewServiceTime(servicetime) {
         });
 }
 
-async function AddService(service) {
-    const response = await fetch(URL + '/services/add', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(service)
-    })
-        .catch(function (error) {
-            console.log('Failed to store data on server: ', error);
-        });
-}
-
 async function NewTicket(servicename) {
     const response = await fetch(URL + '/tickets/add', {
         method: 'POST',
@@ -58,12 +46,12 @@ async function NewTicket(servicename) {
         });
 }
 
-async function UpdateTicket(ticket) {
+async function UpdateTicket(id) {
     const response = await fetch(URL + '/tickets/update', {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ticket)
+        body: JSON.stringify(id)
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
@@ -80,6 +68,6 @@ async function GetNumberOfServicePerOfficier(id) {
     }
 }
 
-const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, AddService, NewTicket, UpdateTicket, GetNumberOfServicePerOfficier };
+const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, NewTicket, UpdateTicket, GetNumberOfServicePerOfficier };
 
 export default DataAPI;

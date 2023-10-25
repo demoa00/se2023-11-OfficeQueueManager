@@ -2,7 +2,7 @@
 
 const express = require('express');
 const morgan = require('morgan');
-const { check, validationResult, param, body } = require('express-validator');
+const { validationResult, param, body } = require('express-validator');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
@@ -15,11 +15,12 @@ const officiers = require('./officiers.js');
 const tickets = require('./ticketserved.js');
 const bridge = require('./bridge.js');
 
+
 /* 
   
-  +-------------------------+
+  +--------------------------+
   | INIZIALIZATION PASSPORT: | 
-  +-------------------------+
+  +--------------------------+
 
 */
 
@@ -49,6 +50,7 @@ passport.deserializeUser((id, done) => {
       done(err, null);
     });
 });
+
 
 /* 
   
@@ -97,6 +99,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 /* 
   
   +--------------------------+
@@ -119,7 +122,7 @@ app.get('/api/:servicename/servicetime', [
     .catch(() => res.status(500).end())
 });
 
-app.put('/api/updatetime?servicename=value', IsLoggedIn, [
+app.put('/api/:servicename/updatetime', IsLoggedIn, [
   param('servicename').isAlpha().isLength({ min: 1 }),
   body("servicetime").isInt({ min: 0 })
 ], async (req, res) => {
@@ -143,27 +146,21 @@ app.put('/api/updatetime?servicename=value', IsLoggedIn, [
 }
 );
 
-app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if necessary */],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors)
-      return res.status(422).json({ errors: errors.array() });
-    } else {
-      try {
-        const service = {
-          servicename: req.body.servicename,
-          servicetime: req.body.servicetime
-        }
-        const newService = await services.AddService(service);
-        res.json(newService);
-      } catch (err) {
-        console.log(err)
-        res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
-      }
-    }
-  }
-);
+
+/* 
+  
+  +-------------------------+
+  | BRIDGE FUNCTIONS BELOW: | 
+  +-------------------------+
+
+*/
+
+app.get('/api/services/:id', (req, res) => {
+  bridge.GetNumberOfServicePerOfficier(req.params.id)
+    .then(numservices => res.json(numservices))
+    .catch(() => res.status(500).end());
+});
+
 
 /* 
   
@@ -173,29 +170,32 @@ app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if ne
 
 */
 
-app.post('/api/tickets/add', IsLoggedIn, [ body("servicename").isAlpha().isLength({min : 1}) ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors)
-      return res.status(422).json({ errors: errors.array() });
-    } else {
-      try {
-        const ticket = {
-          servicename: req.body.servicename,
-          servicetime: JSON.stringify(dayjs()),
-        }
-        const newTicket = await tickets.NewTicket(ticket);
-        res.json(newTicket);
-      } catch (err) {
-        console.log(err)
-        res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
+app.post('/api/tickets/add', IsLoggedIn, [
+  body("servicename").isAlpha().isLength({ min: 1 })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const ticket = {
+        servicename: req.body.servicename,
+        starttime: JSON.stringify(dayjs()),
       }
+      const newTicket = await tickets.NewTicket(ticket);
+      res.json(newTicket);
+    } catch (err) {
+      console.log(err)
+      res.status(503).json({ error: `Database error during the add of the page  ${req.params.id}.` });
     }
   }
+}
 );
 
-app.put('/api/tickets/update', IsLoggedIn, [/*express-validator check if necessary*/], async (req, res) => {
+app.put('/api/tickets/update', IsLoggedIn, [
+  body("id").notEmpty().isInt({ min: 0 })
+], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors)
@@ -204,7 +204,7 @@ app.put('/api/tickets/update', IsLoggedIn, [/*express-validator check if necessa
     try {
       const ticket = {
         id: req.body.id,
-        realtime: JSON.stringify(dayjs())
+        endtime: JSON.stringify(dayjs())
       }
       const updateTicket = await tickets.UpdateTicket(ticket);
       res.json(updateTicket);
@@ -215,6 +215,7 @@ app.put('/api/tickets/update', IsLoggedIn, [/*express-validator check if necessa
   }
 }
 );
+
 
 /* 
   
@@ -261,6 +262,7 @@ app.delete('/api/sessions/current', IsLoggedIn, (req, res) => {
   req.logOut(() => res.end());
 });
 
+
 /* 
   
   +-----------------------------------+
@@ -271,19 +273,4 @@ app.delete('/api/sessions/current', IsLoggedIn, (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
-});
-
-/* 
-  
-  +-------------------------+
-  | BRIDGE FUNCTIONS BELOW: | 
-  +-------------------------+
-
-*/
-
-
-app.get('/api/services/:id', (req, res) => {
-  bridge.GetNumberOfServicePerOfficier(req.params.id)
-    .then(numservices => res.json(numservices))
-    .catch(() => res.status(500).end());
 });
