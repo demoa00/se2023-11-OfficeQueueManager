@@ -58,7 +58,7 @@ Update the time associated to a service
 - Service : Object containing 2 fields {time, serviceName}
 ### Results :
 Add a service into a new row, in a complete implementation should control that the serviceName, is not present yet and throw an error
-
+https://universal-meadow-271131.postman.co/workspace/3b089187-f90b-4e4d-8014-310a332a3a45/documentation/27363631-4a96304a-ec0b-4f76-b35e-ddc1226963db
 
 # POSSIBLE IMPLEMENTATIONS:
 Related to the problem given and all his stories some ideas are given below for the API implementation:

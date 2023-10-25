@@ -2,7 +2,7 @@
 
 const express = require('express');
 const morgan = require('morgan');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, param, body } = require('express-validator');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
@@ -11,25 +11,20 @@ const cors = require('cors');
 //Variables related to the other JS files:
 const services = require('./services.js');
 const officiers = require('./officiers.js');
-const tickets = require('./ticketserved.js'); 
+const tickets = require('./ticketserved.js');
 
-const app = new express();
-const port = 3001;
+/* 
+  
+  +-------------------------+
+  | INIZIALIZATION PASSPORT: | 
+  +-------------------------+
 
-app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.static('public'))
-
-const corsOptions = {
-  origin: 'http://localhost:5173',
-  credentials: true,
-};
-app.use(cors(corsOptions));
+*/
 
 //Local strategy implements httpOnly
 passport.use(new LocalStrategy(
-  function (email, password, done) {
-    officiers.getUser(email, password).then((user) => {
+  function (username, password, done) {
+    officiers.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, { message: 'Incorrect email and/or password.' });
 
@@ -53,11 +48,41 @@ passport.deserializeUser((id, done) => {
     });
 });
 
+/* 
+  
+  +-------------------------+
+  | INIZIALIZATION EXPRESS: | 
+  +-------------------------+
+
+*/
+
+const app = new express();
+const port = 3001;
+
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.static('public'))
+
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 //Function who verify if the user is logged in
 const IsLoggedIn = (req, res, next) => {
   if (req.isAuthenticated())
     return next();
   return res.status(401).json({ error: 'Not authenticated' });
+}
+
+//Function who verify if the user has admin privileges
+const IsAdmin = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.admin == 1)
+    return next();
+
+  return res.status(403).json({ error: 'Not enough requirements' });
 }
 
 //Setup of the session
@@ -69,11 +94,6 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-//Server activation:
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
 
 /* 
   
@@ -89,32 +109,36 @@ app.get('/api/services', (req, res) => {
     .catch(() => res.status(500).end());
 });
 
-app.get('/api/:servicename/servicetime', (req, res) => {
+app.get('/api/:servicename/servicetime', [
+  param('servicename').isAlpha().isLength({ min: 1 })
+], (req, res) => {
   services.GetServiceTime(req.params.servicename)
     .then(services => res.json(services))
     .catch(() => res.status(500).end())
 });
 
-app.put('/api/:servicename/updatetime', IsLoggedIn, [/* check with express-validator if necessary */],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors)
-      return res.status(422).json({ errors: errors.array() });
-    } else {
-      try {
-        const service = {
-          servicename: req.params.servicename,
-          servicetime: req.body.servicetime
-        }
-        const updateService = await services.SetNewServiceTime(service);
-        res.json(updateService);
-      } catch (err) {
-        console.log(err)
-        res.status(503).json({ error: `Database error during the edit of the page  ${req.params.servicename}.` });
+app.put('/api/:servicename/updatetime', IsLoggedIn, [
+  param('servicename').isAlpha().isLength({ min: 1 }),
+  body("servicetime").isInt({ min: 0 })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const service = {
+        servicename: req.params.servicename,
+        servicetime: req.body.servicetime
       }
+      const updateService = await services.SetNewServiceTime(service);
+      res.json(updateService);
+    } catch (err) {
+      console.log(err)
+      res.status(503).json({ error: `Database error during the edit of the page  ${req.params.servicename}.` });
     }
   }
+}
 );
 
 app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if necessary */],
@@ -147,7 +171,7 @@ app.post('/api/services/add', IsLoggedIn, [/* check with express-validator if ne
 
 */
 
-app.post('/api/tickets/add', IsLoggedIn, [/* check with express-validator if necessary */],
+app.post('/api/tickets/add', [/* check with express-validator if necessary */],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -170,3 +194,59 @@ app.post('/api/tickets/add', IsLoggedIn, [/* check with express-validator if nec
   }
 );
 
+/* 
+  
+  +------------------------+
+  | LOGIN FUNCTIONS BELOW: | 
+  +------------------------+
+
+*/
+
+app.post('/api/sessions', [
+  body('email').isEmail(),
+  body('password').isLength({ min: 3 })
+], (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(401).json(info);
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.json(req.user);
+    });
+  })(req, res, next);
+});
+
+// Check whether the user is logged in or not
+app.get('/api/sessions/current', IsLoggedIn, (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json(req.user);
+  } else {
+    res.status(401).json({ error: "Unauthenticated user!" });
+  }
+});
+
+// Logout
+app.delete('/api/sessions/current', IsLoggedIn, (req, res) => {
+  req.logOut(() => res.end());
+});
+
+/* 
+  
+  +-----------------------------------+
+  | SERVER ACTIVATION FUNCTION BELOW: | 
+  +-----------------------------------+
+
+*/
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});

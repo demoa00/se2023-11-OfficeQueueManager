@@ -1,19 +1,19 @@
 const URL = 'http://localhost:3001/api';
 
 async function GetServicesName() {
-    const response = await fetch(URL + '/services', {credentials: 'include'} );
+    const response = await fetch(URL + '/services', { credentials: 'include' });
     const services = await response.json();
     if (response.ok) {
-        return services.map((e) => ({ 
+        return services.map((e) => ({
             servicename: e.servicename,
-         }))
+        }))
     } else {
         throw services;
     }
 }
 
 async function GetServiceTime(servicename) {
-    const response = await fetch(URL + `/${servicename}/servicetime`, {credentials: 'include'} );
+    const response = await fetch(URL + `/${servicename}/servicetime`, { credentials: 'include' });
     const obj = await response.json();
     if (response.ok) {
         return obj.servicetime;
@@ -27,7 +27,7 @@ async function SetNewServiceTime(servicetime) {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({servicetime})
+        body: JSON.stringify({ servicetime })
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
