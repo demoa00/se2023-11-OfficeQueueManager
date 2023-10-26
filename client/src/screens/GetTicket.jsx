@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap'
 import DataAPI from '../FunctionalAPI/DataAPI'
 import '../style/getTicket.css'
+import { useNavigate } from 'react-router-dom'
 
-function GetTicket() {
+function GetTicket(props) {
 
   const [services, setServices] = useState(null)
   const [hoveredService, setHoveredService] = useState(null)
   const [selectedService, setSelectedService] = useState(null)
 
+  const navigate = useNavigate()
   
   useEffect(()=>{
     DataAPI.GetServicesName().then((s)=>{
@@ -21,7 +23,19 @@ function GetTicket() {
 
   function getTicket () {
     DataAPI.NewTicket(selectedService.servicename).then((s)=>{
-      console.log(s)
+      // if(s.status === 200){
+        var currentQueue = props.queue
+        var servicename = selectedService.servicename
+        if(currentQueue[servicename] === undefined){
+          currentQueue[servicename] = [`1`]
+        }
+        else {
+          currentQueue[servicename] = [...currentQueue[servicename], `${currentQueue[servicename].length + 1}`]
+        }
+        props.setQueue({...currentQueue})
+        // console.log(currentQueue)
+        navigate('/queue')
+      // }
     }).catch((err)=>{
       console.log(err)
     })
