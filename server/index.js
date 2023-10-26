@@ -122,8 +122,8 @@ app.get('/api/:servicename/servicetime', [
     .catch(() => res.status(500).end())
 });
 
-app.put('/api/:servicename/updatetime', IsLoggedIn, [
-  param('servicename').isAlpha().isLength({ min: 1 }),
+app.put('/api/:servicename/updatetime', [
+  body('servicename').isAlpha().isLength({ min: 1 }),
   body("servicetime").isInt({ min: 0 })
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -133,7 +133,7 @@ app.put('/api/:servicename/updatetime', IsLoggedIn, [
   } else {
     try {
       const service = {
-        servicename: req.params.servicename,
+        servicename: req.body.servicename,
         servicetime: req.body.servicetime
       }
       const updateService = await services.SetNewServiceTime(service);
@@ -182,7 +182,8 @@ app.get('/api/services/:id', [
 
 */
 
-app.post('/api/tickets/add', IsLoggedIn, [
+//Is invoked when a client request a new service
+app.post('/api/tickets/add', [
   body("servicename").isAlpha().isLength({ min: 1 })
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -193,7 +194,7 @@ app.post('/api/tickets/add', IsLoggedIn, [
     try {
       const ticket = {
         servicename: req.body.servicename,
-        starttime: JSON.stringify(dayjs()),
+        requesttime: JSON.stringify(dayjs()),
       }
       const newTicket = await tickets.NewTicket(ticket);
       res.json(newTicket);
@@ -205,7 +206,36 @@ app.post('/api/tickets/add', IsLoggedIn, [
 }
 );
 
-app.put('/api/tickets/update', IsLoggedIn, [
+//Get next ticket
+app.get('/api/tickets/:servicename', [
+  param('servicename').isAlpha().isLength({ min: 1 })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const ticket = {
+        servicename: req.params.servicename,
+        starttime: JSON.stringify(dayjs())
+      }
+      const getNextTicket = await tickets.getNextTicket(ticket);
+      res.json(getNextTicket);
+    } catch (err) {
+      if (err == 0) {
+        res.status(503).json({ error: `There is not ticket for service:  ${req.params.servicename}.` });
+      } else {
+        console.log(err)
+        res.status(503).json({ error: `Database error during extract ticket for service:  ${req.params.servicename}.` });
+      }
+    }
+  }
+}
+);
+
+//Is invoked when an officer finish to serve a client
+app.put('/api/tickets/update', [
   body("id").notEmpty().isInt({ min: 0 })
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -216,13 +246,37 @@ app.put('/api/tickets/update', IsLoggedIn, [
     try {
       const ticket = {
         id: req.body.id,
-        endtime: JSON.stringify(dayjs())
+        endtime: JSON.stringify(dayjs()),
       }
-      const updateTicket = await tickets.UpdateTicket(ticket);
+      const updateTicket = await tickets.updateEndTimeTicket(ticket);
       res.json(updateTicket);
     } catch (err) {
       console.log(err)
-      res.status(503).json({ error: `Database error during the edit of the page  ${req.body.id}.` });
+      res.status(503).json({ error: `Database error in updating ticket id: ${req.body.id}.` });
+    }
+  }
+}
+);
+
+//Is invoked if the client corresponding to the selected ticket there is not
+app.delete('/api/tickets/delete/:id', [
+  param("id").notEmpty().isInt({ min: 0 })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const deleteTicket = await tickets.DeleteTicket(req.params.id);
+      res.json(deleteTicket);
+    } catch (err) {
+      if (err == 0) {
+        res.status(503).json({ error: `There is not ticket with id:  ${req.params.id}.` });
+      } else {
+        console.log(err)
+        res.status(503).json({ error: `Database error during removing ticket id:  ${req.params.id}.` });
+      }
     }
   }
 }
@@ -261,7 +315,7 @@ app.post('/api/sessions', [
 });
 
 // Check whether the user is logged in or not
-app.get('/api/sessions/current', IsLoggedIn, (req, res) => {
+app.get('/api/sessions/current', (req, res) => {
   if (req.isAuthenticated()) {
     res.status(200).json(req.user);
   } else {
@@ -270,7 +324,7 @@ app.get('/api/sessions/current', IsLoggedIn, (req, res) => {
 });
 
 // Logout
-app.delete('/api/sessions/current', IsLoggedIn, (req, res) => {
+app.delete('/api/sessions/current', (req, res) => {
   req.logOut(() => res.end());
 });
 

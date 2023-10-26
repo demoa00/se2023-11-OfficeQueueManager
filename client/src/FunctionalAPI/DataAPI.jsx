@@ -22,12 +22,12 @@ async function GetServiceTime(servicename) {
     }
 }
 
-async function SetNewServiceTime(servicetime) {
-    const response = await fetch(URL + `/${servicename}/updatetime`, {
+async function SetNewServiceTime(servicetime, servicename) {
+    const response = await fetch(URL + `/updatetime`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(servicetime)
+        body: JSON.stringify({ servicename, servicetime })
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
@@ -39,11 +39,26 @@ async function NewTicket(servicename) {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(servicename)
+        body: JSON.stringify({ servicename })
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
         });
+}
+
+async function GetNextTicket(servicename) {
+    const response = await fetch(URL + `/tickets/${servicename}`, { credentials: 'include' });
+    const obj = await response.json();
+    if (response.ok) {
+        let ticket = {
+            id: obj.id,
+            servicename: obj.servicename
+        }
+
+        return ticket;
+    } else {
+        throw obj;
+    }
 }
 
 async function UpdateTicket(id) {
@@ -51,11 +66,23 @@ async function UpdateTicket(id) {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id)
+        body: JSON.stringify({ id })
     })
         .catch(function (error) {
             console.log('Failed to store data on server: ', error);
         });
+}
+
+async function DeleteTicket(id) {
+    const response = await fetch(URL + `/tickets/delete/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw result;
+    }
 }
 
 async function GetNumberOfServicePerOfficier(id) {
@@ -68,6 +95,6 @@ async function GetNumberOfServicePerOfficier(id) {
     }
 }
 
-const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, NewTicket, UpdateTicket, GetNumberOfServicePerOfficier };
+const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, NewTicket, GetNextTicket, UpdateTicket, DeleteTicket, GetNumberOfServicePerOfficier };
 
 export default DataAPI;
