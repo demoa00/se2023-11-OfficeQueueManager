@@ -61,11 +61,12 @@ function ServeNextClient() {
                 // Imposta l'intervallo come stato per poterlo cancellare più tardi
                 setIntervalloTempo(intervalId);
             } catch (error) {
-                let index = 0
-                while(error.error ==='There is not ticket for service:  '+servizi[index].servicename+'.' && index<servizi.length){
+                let seconderror = error
+                let index = 1
+                while(seconderror.error ==='There is not ticket for service:  '+servizi[index-1].servicename+'.' && index<servizi.length){
+                    console.log(seconderror.error ==='There is not ticket for service:  '+servizi[index-1].servicename+'.', index)
                     try {
-                        index++;
-                        console.log(error.error)
+                        console.log(seconderror.error)
                         const ticket = await DataAPI.GetNextTicket(servizi[index].servicename);
 
 
@@ -81,12 +82,14 @@ function ServeNextClient() {
                         }, 1000); // Ogni secondo
 
                         setIntervalloTempo(intervalId);
+                        index++;
 
                     } catch (error) {
+                        seconderror = error
+                        index++;
 
                     }
                 }
-                console.error(error);
                 // Gestire gli errori in modo appropriato, ad esempio, mostrando un messaggio all'utente
             }
 
