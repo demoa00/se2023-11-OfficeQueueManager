@@ -57,7 +57,7 @@ function ServeNextClient() {
 
             try {
                 // Chiamata all'API per ottenere i dati del nuovo cliente
-                const ticket = await DataAPI.GetNextTicket(servizi[0].nome);
+                const ticket = await DataAPI.GetNextTicket(servizi[0].servicename);
 
 
                 // Imposta i dati del nuovo cliente nello stato
