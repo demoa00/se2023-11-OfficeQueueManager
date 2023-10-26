@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {Button, Col, Container, Row, Table} from 'react-bootstrap'
 import '../style/serveNextClient.css'
+import DataAPI from "../FunctionalAPI/DataAPI.jsx";
 
 function ServeNextClient() {
     const [nuovoCliente, setNuovoCliente] = useState(null);
@@ -9,9 +10,13 @@ function ServeNextClient() {
     const [tempoTrascorso, setTempoTrascorso] = useState(0);
     const [intervalloTempo, setIntervalloTempo] = useState(null);
 
+    const servizi = ([{id:1, nome:"Assistance", averageServiceTime:"5"}, {id:2, nome:"Expeditions", averageServiceTime:"2"}])
+
+
     const chiamaNuovoCliente = async () => {
-        setTimeout(()=>{
-            setNuovoCliente({id:"1", serviceId:"1", service:"SPID"})
+        setTimeout(async ()=>{
+
+            setNuovoCliente({id:"1", serviceId:"1", service:"Assistance"})
             setServizioInCorso(true);
             const tempoInizioServizio = new Date()
 
@@ -22,9 +27,11 @@ function ServeNextClient() {
                 setTempoTrascorso(tempoTrascorso);
             }, 1000); // Ogni secondo
             setIntervalloTempo(intervalId);
-            /*try {
+
+             /*
+            try {
                 // Chiamata all'API per ottenere i dati del nuovo cliente
-                const response = await fetch('URL_DEL_TUO_ENDPOINT_API');
+                const response = await DataAPI.GetNextTicket(servizi[0].nome);
                 if (!response.ok) {
                     throw new Error('Errore nella chiamata API');
                 }
@@ -49,7 +56,9 @@ function ServeNextClient() {
                 // Gestire gli errori in modo appropriato, ad esempio, mostrando un messaggio all'utente
             }
 
-             */
+              */
+
+
         },5)
 
     };
@@ -83,7 +92,7 @@ function ServeNextClient() {
                         </Row>
                         <Row className='mb-5'>
                             <Col>
-                                <p>Client id: {JSON.parse(JSON.stringify(nuovoCliente)).id}</p>
+                                <p>Ticket Number: {JSON.parse(JSON.stringify(nuovoCliente)).id}</p>
 
                             </Col>
                             <Col>
@@ -105,7 +114,7 @@ function ServeNextClient() {
                 ) : (
                     <Col xs={12}>
                         <Row className='mb-5'>
-                            <ServiziDaServire />
+                            <ServiziDaServire servizi = {servizi} />
                         </Row>
                         <Row>
                             <Button variant="primary" onClick={chiamaNuovoCliente}>
@@ -119,7 +128,7 @@ function ServeNextClient() {
     );
 }
 
-function ServiziDaServire() {
+function ServiziDaServire(props) {
    // const [servizi, setServizi] = useState([]);
 
     /*useEffect(() => {
@@ -138,12 +147,12 @@ function ServiziDaServire() {
     setServizi([{id:1, nome:"spid", averageServiceTime:"3"},{id:2, nome:"prelievo", averageServiceTime:"5"}])
 
      */
-    const servizi = [{id:1, nome:"spid", averageServiceTime:"3"},{id:2, nome:"prelievo", averageServiceTime:"5"}]
+
 
     return (
         <Col xs={12}>
             <Row>
-                {servizi.length > 0 ? (
+                {props.servizi.length > 0 ? (
                     <div className="servizi-container">
                         <h2>Servizi da servire</h2>
                         <Table striped bordered hover>
@@ -155,7 +164,7 @@ function ServiziDaServire() {
                             </tr>
                             </thead>
                             <tbody>
-                            {servizi.map((servizio, index) => (
+                            {props.servizi.map((servizio, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{JSON.parse(JSON.stringify(servizio)).nome}</td>
