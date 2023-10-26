@@ -17,20 +17,6 @@ function ServeNextClient() {
             setServizi(s)
         })
     }, [])
-/*
-        .then(()=>{
-            servizi.forEach((servizio)=>{
-                DataAPI.GetServiceTime(servizio).then((s)=>{
-                    console.log(s)
-                    setServizi(s)
-                }).catch((err)=>{
-                    console.log(err)
-                })
-            }).catch((err)=>{
-                console.log(err)
-            })
-
- */
     //const servizi = ([{id:1, nome:"Assistance", averageServiceTime:"5"}, {id:2, nome:"Expeditions", averageServiceTime:"2"}])
 
 
@@ -56,6 +42,7 @@ function ServeNextClient() {
              */
 
             try {
+
                 // Chiamata all'API per ottenere i dati del nuovo cliente
                 const ticket = await DataAPI.GetNextTicket(servizi[0].servicename);
 
@@ -74,6 +61,29 @@ function ServeNextClient() {
                 // Imposta l'intervallo come stato per poterlo cancellare più tardi
                 setIntervalloTempo(intervalId);
             } catch (error) {
+                let index = 0
+                while(error.error ==='There is not ticket for service:  '+servizi[index].servicename+'.' && index<servizi.length){
+                    try {
+                        index++;
+                        console.log(error.error)
+                        const ticket = await DataAPI.GetNextTicket(servizi[index].servicename);
+
+
+                        // Imposta i dati del nuovo cliente nello stato
+                        setNuovoCliente(ticket)
+
+                        setServizioInCorso(true);
+                        tempoInizioServizio = new Date()
+                        const intervalId = setInterval(() => {
+                            const tempoCorrente = new Date();
+                            const tempoTrascorso = tempoCorrente - tempoInizioServizio;
+                            setTempoTrascorso(tempoTrascorso);
+                        }, 1000); // Ogni secondo
+
+                    } catch (error) {
+
+                    }
+                }
                 console.error(error);
                 // Gestire gli errori in modo appropriato, ad esempio, mostrando un messaggio all'utente
             }
