@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/queue" element={<Queue/>}></Route>
         <Route path="/getTicket" element={<GetTicket/>}></Route>
-          <Route path="/serveClient" element={<ServeNextClient/>}></Route>
+        <Route path="/serveClient" element={<ServeNextClient/>}></Route>
       </Routes>
     </BrowserRouter>
   )

@@ -1,18 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap'
+import DataAPI from '../FunctionalAPI/DataAPI'
 import '../style/getTicket.css'
 
 function GetTicket() {
 
+  const [services, setServices] = useState(null)
   const [hoveredService, setHoveredService] = useState(null)
   const [selectedService, setSelectedService] = useState(null)
 
+  
   useEffect(()=>{
-    console.log("selectedService", selectedService)    
-  }, [selectedService])
+    DataAPI.GetServicesName().then((s)=>{
+      console.log(s)
+      setServices(s)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }, [])
+
+  function getTicket () {
+    DataAPI.NewTicket(selectedService.servicename).then((s)=>{
+      console.log(s)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
 
   return (
-    <Container className='p-4 vh-100 d-flex flex-column'>
+    <Container className=''>
       <Row className='mb-5'>
         <Col xs={12} className='text-center'>
           <h1 >
@@ -21,64 +37,26 @@ function GetTicket() {
         </Col>
       </Row>
       <Row>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Assistance')}} 
-          onMouseLeave={()=>{setHoveredService(null)}} 
-          onClick={()=>{selectedService !== 'Assistance' ? setSelectedService('Assistance') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Assistance' ? 'hovered' : ''} ${selectedService === 'Assistance' ? 'selected' : ''}`}>
-              <h2>Assistance</h2>
-            </div>
-        </Col>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Expeditions')}} 
-          onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'Expeditions' ? setSelectedService('Expeditions') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Expeditions' ? 'hovered' : ''} ${selectedService === 'Expeditions' ? 'selected' : ''}`}>
-              <h2>Expeditions</h2>
-            </div>
-        </Col>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Energy Services')}} 
-          onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'Energy Services' ? setSelectedService('Energy Services') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Energy Services' ? 'hovered' : ''} ${selectedService === 'Energy Services' ? 'selected' : ''}`}>
-              <h2>Energy<br></br>Services</h2>
-            </div>
-        </Col>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Telephone Services')}} 
-          onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'Telephone Services' ? setSelectedService('Telephone Services') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Telephone Services' ? 'hovered' : ''} ${selectedService === 'Telephone Services' ? 'selected' : ''}`}>
-              <h2>Telephone<br></br>Services</h2>
-            </div>
-        </Col>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Investments')}} 
-          onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'Investments' ? setSelectedService('Investments') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Investments' ? 'hovered' : ''} ${selectedService === 'Investments' ? 'selected' : ''}`}>
-              <h2>Investments</h2>
-            </div>
-        </Col>
-        <Col xs={4} 
-          className='mb-4'
-          onMouseEnter={()=>{setHoveredService('Insurance')}} 
-          onMouseLeave={()=>{setHoveredService(null)}}
-          onClick={()=>{selectedService !== 'Insurance' ? setSelectedService('Insurance') : setSelectedService(null)}}>
-            <div className={`serviceContainer ${hoveredService === 'Insurance' ? 'hovered' : ''} ${selectedService === 'Insurance' ? 'selected' : ''}`}>
-              <h2>Insurance</h2>
-            </div>
-        </Col>
+        {
+          services && services.map((service, index)=>{
+            return (
+              <Col xs={4} 
+                key={index}
+                className='mb-4'
+                onMouseEnter={()=>{setHoveredService(service)}} 
+                onMouseLeave={()=>{setHoveredService(null)}} 
+                onClick={()=>{selectedService !== service ? setSelectedService(service) : setSelectedService(null)}}>
+                  <div className={`serviceContainer ${hoveredService === service ? 'hovered' : ''} ${selectedService === service ? 'selected' : ''}`}>
+                    <h2>{service.servicename}</h2>
+                  </div>
+              </Col>
+            )
+          })
+        }
       </Row>
       <div className='buttonsContainer'>
-        <Button variant='outline-primary' className='me-3' onClick={()=>setSelectedService(null)}>Cancel</Button>
-        <Button variant='primary'>Continue</Button>
+        <Button variant='outline-danger' className='me-3' onClick={()=>setSelectedService(null)}>Cancel</Button>
+        <Button variant='success' disabled={!!!selectedService} onClick={getTicket}>Continue</Button>
       </div>
     </Container>
   )
