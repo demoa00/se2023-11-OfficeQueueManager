@@ -152,9 +152,10 @@ function ServiziDaServire(props) {
     return (
         <Col xs={12}>
             <Row>
+                <h2>Servizi da servire</h2>
                 {props.servizi.length > 0 ? (
                     <div className="servizi-container">
-                        <h2>Servizi da servire</h2>
+
                         <Table striped bordered hover>
                             <thead>
                             <tr>
