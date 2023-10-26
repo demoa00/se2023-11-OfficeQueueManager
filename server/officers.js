@@ -10,7 +10,7 @@ const db = new sqlite.Database('DemoDataBase.sqlite', (err) => {
 
 exports.getUser = (email, password) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM Officiers WHERE email = ?';
+        const sql = 'SELECT * FROM Officers WHERE email = ?';
         db.get(sql, [email], (err, row) => {
             if (err) {
                 reject(err);
@@ -46,7 +46,7 @@ exports.getUser = (email, password) => {
 
 exports.getUserById = (id) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM officiers WHERE id = ?';
+        const sql = 'SELECT * FROM officers WHERE id = ?';
         db.get(sql, [id], (err, row) => {
             if (err)
                 reject(err);

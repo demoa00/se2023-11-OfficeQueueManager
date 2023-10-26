@@ -11,7 +11,7 @@ const dayjs = require('dayjs');
 
 //Variables related to the other JS files:
 const services = require('./services.js');
-const officiers = require('./officiers.js');
+const officers = require('./officers.js');
 const tickets = require('./ticketserved.js');
 const bridge = require('./bridge.js');
 
@@ -27,7 +27,7 @@ const bridge = require('./bridge.js');
 //Local strategy implements httpOnly
 passport.use(new LocalStrategy(
   function (username, password, done) {
-    officiers.getUser(username, password).then((user) => {
+    officers.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, { message: 'Incorrect email and/or password.' });
 
@@ -43,7 +43,7 @@ passport.serializeUser((user, done) => {
 
 //Deserializzazion:
 passport.deserializeUser((id, done) => {
-  officiers.getUserById(id)
+  officers.getUserById(id)
     .then(user => {
       done(null, user);
     }).catch(err => {
@@ -155,10 +155,22 @@ app.put('/api/:servicename/updatetime', IsLoggedIn, [
 
 */
 
-app.get('/api/services/:id', (req, res) => {
-  bridge.GetNumberOfServicePerOfficier(req.params.id)
-    .then(numservices => res.json(numservices))
-    .catch(() => res.status(500).end());
+app.get('/api/services/:id', [
+  param("id").notEmpty().isInt({ min: 0 })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const numservices = await bridge.GetNumberOfServicePerOfficer(req.params.id);
+      res.json(numservices);
+    } catch (err) {
+      console.log(err)
+      res.status(503).json({ error: `Database error during the edit of the page  ${req.params.servicename}.` });
+    }
+  }
 });
 
 
