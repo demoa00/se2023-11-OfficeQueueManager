@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import {Button, Col, Container, Row, Table} from 'react-bootstrap'
 import '../style/serveNextClient.css'
 import DataAPI from "../FunctionalAPI/DataAPI.jsx";
@@ -6,7 +6,6 @@ import DataAPI from "../FunctionalAPI/DataAPI.jsx";
 function ServeNextClient() {
     const [nuovoCliente, setNuovoCliente] = useState(null);
     const [servizioInCorso, setServizioInCorso] = useState(false);
-    const [tempoFineServizio, setTempoFineServizio] = useState(null);
     const [tempoTrascorso, setTempoTrascorso] = useState(0);
     const [intervalloTempo, setIntervalloTempo] = useState(null);
     const [servizi, setServizi] = useState([]);
@@ -104,20 +103,12 @@ function ServeNextClient() {
 
     const terminaServizioCliente = async () => {
 
-        setTimeout(()=>{
+        setTimeout(async ()=>{
             setServizioInCorso(false);
-            setTempoFineServizio(new Date());
             clearInterval(intervalloTempo);
 
-            const tempoDiServizio =
-                tempoInizioServizio && tempoFineServizio
-                    ? tempoFineServizio - tempoInizioServizio
-                    : null;
-
-            if (tempoDiServizio !== null) {
-                // Invia il tempoDiServizio al tuo sistema di gestione del database
-                inviaTempoDiServizioAlDatabase(tempoDiServizio);
-            }
+            // Invia il tempoDiServizio al tuo sistema di gestione del database
+            await DataAPI.UpdateTicket(nuovoCliente.id)
         },5)
 
     };
