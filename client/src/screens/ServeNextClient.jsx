@@ -9,9 +9,29 @@ function ServeNextClient() {
     const [tempoFineServizio, setTempoFineServizio] = useState(null);
     const [tempoTrascorso, setTempoTrascorso] = useState(0);
     const [intervalloTempo, setIntervalloTempo] = useState(null);
+    const [servizi, setServizi] = useState([]);
     let tempoInizioServizio
+    useEffect(()=>{
+        DataAPI.GetServicesName().then((s)=>{
+            console.log(s)
+            setServizi(s)
+        })
+    }, [])
+/*
+        .then(()=>{
+            servizi.forEach((servizio)=>{
+                DataAPI.GetServiceTime(servizio).then((s)=>{
+                    console.log(s)
+                    setServizi(s)
+                }).catch((err)=>{
+                    console.log(err)
+                })
+            }).catch((err)=>{
+                console.log(err)
+            })
 
-    const servizi = ([{id:1, nome:"Assistance", averageServiceTime:"5"}, {id:2, nome:"Expeditions", averageServiceTime:"2"}])
+ */
+    //const servizi = ([{id:1, nome:"Assistance", averageServiceTime:"5"}, {id:2, nome:"Expeditions", averageServiceTime:"2"}])
 
 
     const chiamaNuovoCliente = async () => {
@@ -172,8 +192,9 @@ function ServiziDaServire(props) {
                             {props.servizi.map((servizio, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{JSON.parse(JSON.stringify(servizio)).nome}</td>
-                                    <td>{JSON.parse(JSON.stringify(servizio)).averageServiceTime} min</td>
+                                    <td>{JSON.parse(JSON.stringify(servizio)).servicename}</td>
+                                    <td>5 min</td>
+
                                 </tr>
                             ))}
                             </tbody>
