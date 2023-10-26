@@ -193,7 +193,7 @@ function ServiziDaServire(props) {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{JSON.parse(JSON.stringify(servizio)).servicename}</td>
-                                    <td>5 min</td>
+                                    <td>{JSON.parse(JSON.stringify(servizio)).servicetime}</td>
 
                                 </tr>
                             ))}
