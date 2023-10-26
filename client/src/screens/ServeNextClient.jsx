@@ -9,40 +9,42 @@ function ServeNextClient() {
     const [tempoFineServizio, setTempoFineServizio] = useState(null);
     const [tempoTrascorso, setTempoTrascorso] = useState(0);
     const [intervalloTempo, setIntervalloTempo] = useState(null);
+    let tempoInizioServizio
 
     const servizi = ([{id:1, nome:"Assistance", averageServiceTime:"5"}, {id:2, nome:"Expeditions", averageServiceTime:"2"}])
 
 
     const chiamaNuovoCliente = async () => {
-        setTimeout(async ()=>{
 
-            setNuovoCliente({id:"1", serviceId:"1", service:"Assistance"})
-            setServizioInCorso(true);
-            const tempoInizioServizio = new Date()
 
-            const intervalId = setInterval(() => {
-                const tempoCorrente = new Date();
+            setTimeout(async ()=>{
 
-                const tempoTrascorso = tempoCorrente - tempoInizioServizio;
-                setTempoTrascorso(tempoTrascorso);
-            }, 1000); // Ogni secondo
-            setIntervalloTempo(intervalId);
+/*
+                setNuovoCliente({id:"1", serviceId:"1", service:"Assistance"})
+                setServizioInCorso(true);
+                tempoInizioServizio = new Date()
 
-             /*
+                const intervalId = setInterval(() => {
+                    const tempoCorrente = new Date();
+
+                    const tempoTrascorso = tempoCorrente - tempoInizioServizio;
+                    setTempoTrascorso(tempoTrascorso);
+                }, 1000); // Ogni secondo
+                setIntervalloTempo(intervalId);
+
+
+             */
+
             try {
                 // Chiamata all'API per ottenere i dati del nuovo cliente
-                const response = await DataAPI.GetNextTicket(servizi[0].nome);
-                if (!response.ok) {
-                    throw new Error('Errore nella chiamata API');
-                }
+                const ticket = await DataAPI.GetNextTicket(servizi[0].nome);
 
-                const data = await response.json();
 
                 // Imposta i dati del nuovo cliente nello stato
-                setNuovoCliente(data)
+                setNuovoCliente(ticket)
 
                 setServizioInCorso(true);
-                setTempoInizioServizio(new Date());
+                tempoInizioServizio = new Date()
                 const intervalId = setInterval(() => {
                     const tempoCorrente = new Date();
                     const tempoTrascorso = tempoCorrente - tempoInizioServizio;
@@ -56,7 +58,9 @@ function ServeNextClient() {
                 // Gestire gli errori in modo appropriato, ad esempio, mostrando un messaggio all'utente
             }
 
-              */
+
+
+
 
 
         },5)
@@ -64,6 +68,7 @@ function ServeNextClient() {
     };
 
     const terminaServizioCliente = async () => {
+
         setTimeout(()=>{
             setServizioInCorso(false);
             setTempoFineServizio(new Date());
@@ -96,7 +101,7 @@ function ServeNextClient() {
 
                             </Col>
                             <Col>
-                                <p>Service: {JSON.parse(JSON.stringify(nuovoCliente)).service}</p>
+                                <p>Service: {JSON.parse(JSON.stringify(nuovoCliente)).servicename}</p>
 
                             </Col>
                         </Row>
@@ -147,7 +152,6 @@ function ServiziDaServire(props) {
     setServizi([{id:1, nome:"spid", averageServiceTime:"3"},{id:2, nome:"prelievo", averageServiceTime:"5"}])
 
      */
-
 
     return (
         <Col xs={12}>
