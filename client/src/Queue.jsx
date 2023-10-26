@@ -15,8 +15,11 @@ const h3Style = {
     textAlign: "center",
 };
 
-function Queue() {
-    const [queue, setQueue] = useState([{ id_ticket: 1, client: "mario", insertTime: dayjs(), inProcess: false },
+function Queue(props) {
+
+    const { queue } = props;
+
+    const [queue1, setQueue1] = useState([{ id_ticket: 1, client: "mario", insertTime: dayjs(), inProcess: false },
     { id_ticket: 2, client: "maria", insertTime: dayjs(), inProcess: false },
     { id_ticket: 3, client: "lucia", insertTime: dayjs(), inProcess: false },
     { id_ticket: 4, client: "luigi", insertTime: dayjs(), inProcess: false },
@@ -27,7 +30,7 @@ function Queue() {
     useEffect(() => {
         /* WAIT FOR API */
     },
-        [queue]
+        [queue1]
     );
 
     const nextTicket = (desk_number) => {
@@ -75,7 +78,7 @@ function Queue() {
             <Row>
                 <Col style={{ margin: "20px" }}>
                     {
-                        queue.sort((a, b) => a.insertTime.diff(b.insertTime)).map((q, i) => {
+                        queue1.sort((a, b) => a.insertTime.diff(b.insertTime)).map((q, i) => {
                             if (q.inProcess) {
                                 return <Row key={i} className="d-flex justify-content-between align-items-center" style={{ ...rowStyle, backgroundColor: "#A0E9FF" }}>
                                     <Col className="d-flex justify-content-start"><h3 style={h3Style}>{q.id_ticket + " " + q.client}</h3></Col>
@@ -96,7 +99,7 @@ function Queue() {
             <Button onClick={() => nextTicket(3)}>
                 next client
             </Button>
-            <Button onClick={() => addTicket({ id_ticket: queue.length + 1, client: "francesca", insertTime: dayjs() })}>
+            <Button onClick={() => addTicket({ id_ticket: queue1.length + 1, client: "francesca", insertTime: dayjs() })}>
                 add client
             </Button>
             <Button onClick={() => deleteTicket(3)}>
