@@ -22,20 +22,9 @@ function GetTicket(props) {
   }, [])
 
   function getTicket () {
-    DataAPI.NewTicket(selectedService.servicename).then((s)=>{
-      // if(s.status === 200){
-        // var currentQueue = props.queue
-        // var servicename = selectedService.servicename
-        // if(currentQueue[servicename] === undefined){
-        //   currentQueue[servicename] = [`1`]
-        // }
-        // else {
-        //   currentQueue[servicename] = [...currentQueue[servicename], `${currentQueue[servicename].length + 1}`]
-        // }
-        // props.setQueue({...currentQueue})
-        // console.log(currentQueue)
-        navigate('/queue')
-      // }
+    DataAPI.NewTicket(selectedService.servicename).then((ticket)=>{
+        console.log("ticket", ticket)
+        // navigate('/queue')
     }).catch((err)=>{
       console.log(err)
     })

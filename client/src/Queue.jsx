@@ -33,7 +33,7 @@ function Queue(props) {
         DataAPI.GetServicesName().then((services) => {
             setServices(services);
         }).catch((err) => { console.log(err) });
-    })
+    }, [])
     // }, 50000);
 
     const navigate = useNavigate();

@@ -48,7 +48,7 @@ async function NewTicket(servicename) {
     const obj = await response.json();
 
     if (response.ok) {
-        return obj.id;
+        return {"number": obj, "status": 200};
     } else {
         throw obj;
     }
