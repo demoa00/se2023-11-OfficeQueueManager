@@ -80,6 +80,8 @@ function ServeNextClient() {
                             setTempoTrascorso(tempoTrascorso);
                         }, 1000); // Ogni secondo
 
+                        setIntervalloTempo(intervalId);
+
                     } catch (error) {
 
                     }
