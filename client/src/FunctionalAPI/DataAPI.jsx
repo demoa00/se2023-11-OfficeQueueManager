@@ -43,17 +43,22 @@ async function NewTicket(servicename) {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ servicename })
-    })
-        .catch(function (error) {
-            console.log('Failed to store data on server: ', error);
-        });
+    });
+
+    const obj = await response.json();
+
+    if (response.ok) {
+        return obj.id;
+    } else {
+        throw obj;
+    }
 }
 
 async function GetWaitingTickets() {
     const response = await fetch(URL + `/tickets`, { credentials: 'include' });
     const obj = await response.json();
     if (response.ok) {
-    let tickets = obj.map((o) => ({ id: o.id, servicename: o.servicename, requesttime: dayjs(o.requesttime) }))
+        let tickets = obj.map((o) => ({ id: o.id, servicename: o.servicename, requesttime: dayjs(o.requesttime) }))
 
         return tickets;
     } else {
