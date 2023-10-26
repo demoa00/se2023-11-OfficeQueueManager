@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Row } from 'react-bootstrap'
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap'
 import DataAPI from '../FunctionalAPI/DataAPI'
 import '../style/getTicket.css'
 import { useNavigate } from 'react-router-dom'
@@ -9,6 +9,8 @@ function GetTicket(props) {
   const [services, setServices] = useState(null)
   const [hoveredService, setHoveredService] = useState(null)
   const [selectedService, setSelectedService] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [ticket, setTicket] = useState(null)
 
   const navigate = useNavigate()
   
@@ -24,7 +26,11 @@ function GetTicket(props) {
   function getTicket () {
     DataAPI.NewTicket(selectedService.servicename).then((ticket)=>{
         console.log("ticket", ticket)
-        // navigate('/queue')
+        setTicket(ticket)
+        setShowModal(true)
+        setTimeout(()=>{
+          navigate('/queue')
+        }, 5000)
     }).catch((err)=>{
       console.log(err)
     })
@@ -61,6 +67,14 @@ function GetTicket(props) {
         <Button variant='outline-danger' className='me-3' onClick={()=>setSelectedService(null)}>Cancel</Button>
         <Button variant='success' disabled={!!!selectedService} onClick={getTicket}>Continue</Button>
       </div>
+      <Modal
+        show={showModal}
+        centered>
+        <Modal.Body className='text-center'>
+          <h2>Your ticket is number:</h2>
+          <h1 style={{"fontSize": "64px"}}>{!!ticket ? ticket.number : ''}</h1>
+        </Modal.Body>
+      </Modal>
     </Container>
   )
 }
