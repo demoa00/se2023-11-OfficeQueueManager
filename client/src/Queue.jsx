@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { Col, Button, ListGroup, ListGroupItem, Container, Row, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 // COLOR PALETTE
 // https://colorhunt.co/palette/00a9ff89cff3a0e9ffcdf5fd
@@ -13,14 +14,17 @@ const rowStyle = {
 
 const h3Style = {
     textAlign: "center",
+    margin: "5px 0"
 };
 
-function Queue() {
+function Queue(props) {
     const [queue, setQueue] = useState([{ id_ticket: 1, client: "mario", insertTime: dayjs(), inProcess: false },
     { id_ticket: 2, client: "maria", insertTime: dayjs(), inProcess: false },
     { id_ticket: 3, client: "lucia", insertTime: dayjs(), inProcess: false },
     { id_ticket: 4, client: "luigi", insertTime: dayjs(), inProcess: false },
     { id_ticket: 5, client: "andrea", insertTime: dayjs(), inProcess: false }]);
+
+    const navigate = useNavigate();
 
     let service = "SPID";
 
@@ -68,41 +72,65 @@ function Queue() {
     };
 
     return <>
-        <Container className="d-flex flex-column justify-content-center" fluid>
+        <Container className="d-flex flex-column">
             <Row className="d-flex justify-content-center" style={{ ...rowStyle, margin: "5px", backgroundColor: "#89CFF3" }}>
                 <h3 style={h3Style}>{"Waiting list for " + service}</h3>
             </Row>
-            <Row>
-                <Col style={{ margin: "20px" }}>
-                    {
-                        queue.sort((a, b) => a.insertTime.diff(b.insertTime)).map((q, i) => {
-                            if (q.inProcess) {
-                                return <Row key={i} className="d-flex justify-content-between align-items-center" style={{ ...rowStyle, backgroundColor: "#A0E9FF" }}>
+            <Container fluid className="d-flex flex-column justify-content-between h-100">
+                <Row>
+                    <Col style={{ margin: "20px 0" }} className="text-start" xs={12}>
+                        {
+                            // Object.entries(props.queue).map(([service, queue]) => {
+                            //     return(
+                            //         <div className="mb-4">
+                            //             <h3 className="font-weight-bold">{service}</h3>
+                            //             {
+                            //                 queue.map((number) => {
+                            //                     return (    
+                            //                         <Row key={number} className="d-flex justify-content-between align-items-center" style={rowStyle}>
+                            //                             <Col className="d-flex justify-content-start"><h3 style={h3Style}>{number}</h3></Col>
+                            //                             <Col className="d-flex justify-content-center"><h3 style={h3Style}>{"Waiting"}</h3></Col>
+                            //                             <Col className="d-flex justify-content-end"><Spinner variant="dark" size="sm" animation="border" /></Col>
+                            //                         </Row>
+                            //                     )
+                            //                 })
+                            //             }
+                            //         </div>
+                            //     )
+                            // })
+                            queue.sort((a, b) => a.insertTime.diff(b.insertTime)).map((q, i) => {
+                                if (q.inProcess) {
+                                    return <Row key={i} className="d-flex justify-content-between align-items-center" style={{ ...rowStyle, backgroundColor: "#A0E9FF" }}>
+                                        <Col className="d-flex justify-content-start"><h3 style={h3Style}>{q.id_ticket + " " + q.client}</h3></Col>
+                                        <Col className="d-flex justify-content-center"><h3 style={h3Style}>{"Desk " + q.desk_number}</h3></Col>
+                                    </Row>;
+                                }
+                                return <Row key={i} className="d-flex justify-content-between align-items-center" style={rowStyle}>
                                     <Col className="d-flex justify-content-start"><h3 style={h3Style}>{q.id_ticket + " " + q.client}</h3></Col>
-                                    <Col className="d-flex justify-content-center"><h3 style={h3Style}>{"Desk " + q.desk_number}</h3></Col>
+                                    <Col className="d-flex justify-content-center"><h3 style={h3Style}>{"Waiting"}</h3></Col>
+                                    <Col className="d-flex justify-content-end"><Spinner variant="dark" size="sm" animation="border" /></Col>
                                 </Row>;
-                            }
-                            return <Row key={i} className="d-flex justify-content-between align-items-center" style={rowStyle}>
-                                <Col className="d-flex justify-content-start"><h3 style={h3Style}>{q.id_ticket + " " + q.client}</h3></Col>
-                                <Col className="d-flex justify-content-center"><h3 style={h3Style}>{"Waiting"}</h3></Col>
-                                <Col className="d-flex justify-content-end"><Spinner variant="dark" size="sm" animation="border" /></Col>
-                            </Row>;
-                        })
-                    }
-                </Col>
-            </Row>
+                            })
+                        }
+                    </Col>
+                </Row>
+                <Row>
+                    <Col className="d-flex flex-row justify-content-center" xs={12}>
+                        {/* <Button onClick={() => nextTicket(3)}>
+                            next client
+                        </Button>
+                        <Button onClick={() => addTicket({ id_ticket: queue.length + 1, client: "francesca", insertTime: dayjs() })}>
+                            add client
+                        </Button>
+                        <Button onClick={() => deleteTicket(3)}>
+                            delete client
+                        </Button> */}
+                        <Button onClick={() => navigate('/getTicket')}>Get Ticket</Button>
+                    </Col>
+                </Row>
+
+            </Container>
         </Container>
-        <Col className="d-flex flex-row justify-content-center">
-            <Button onClick={() => nextTicket(3)}>
-                next client
-            </Button>
-            <Button onClick={() => addTicket({ id_ticket: queue.length + 1, client: "francesca", insertTime: dayjs() })}>
-                add client
-            </Button>
-            <Button onClick={() => deleteTicket(3)}>
-                delete client
-            </Button>
-        </Col>
     </>;
 }
 
