@@ -21,8 +21,31 @@ exports.NewTicket = (ticket) => {
     });
 }
 
-exports.getNextTicket = async (ticket) => {
-    const firstTicket_1 = await new Promise((resolve, reject) => {
+exports.GetWaitingTickets = () => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM TicketsServed WHERE starttime IS NULL';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            if (rows.length <= 0) {
+                reject(0);
+                return;
+            }
+
+            let tickets = rows.map((r) => ({
+                id: r.id, servicename: r.servicename, requesttime: dayjs(JSON.parse(r.requesttime)), starttime: dayjs(JSON.parse(r.starttime)), endtime: dayjs(JSON.parse(r.endtime))
+            })).sort((a, b) => a.requesttime.diff(b.requesttime)).pop();
+
+            resolve(tickets);
+        });
+    });
+}
+
+exports.GetNextTicket = (ticket) => {
+    return new Promise((resolve, reject) => {
         const sql = 'SELECT id, servicename, requesttime FROM TicketsServed WHERE servicename = ? AND starttime IS NULL';
         db.all(sql, [ticket.servicename], (err, rows) => {
             if (err) {
@@ -41,16 +64,17 @@ exports.getNextTicket = async (ticket) => {
 
             resolve(firstTicket);
         });
-    });
-    return await new Promise((resolve_1, reject_1) => {
-        const sql_2 = "UPDATE TicketsServed SET starttime = ? WHERE id = ? AND starttime IS NULL";
-        db.run(sql_2, [JSON.stringify(dayjs()), firstTicket_1.id], function (err_1) {
-            if (err_1) {
-                reject_1(err_1);
-                return;
-            }
+    }).then((firstTicket) => {
+        return new Promise((resolve, reject) => {
+            const sql = "UPDATE TicketsServed SET starttime = ? WHERE id = ? AND starttime IS NULL";
+            db.run(sql, [JSON.stringify(dayjs()), firstTicket.id], function (err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-            resolve_1(firstTicket_1);
+                resolve(firstTicket);
+            });
         });
     });
 }

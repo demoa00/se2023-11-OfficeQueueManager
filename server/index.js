@@ -115,7 +115,7 @@ app.get('/api/services', (req, res) => {
 });
 
 app.get('/api/:servicename/servicetime', [
-  param('servicename').isAlpha().isLength({ min: 1 })
+  param('servicename').isString().isLength({ min: 1 })
 ], (req, res) => {
   services.GetServiceTime(req.params.servicename)
     .then(services => res.json(services))
@@ -123,7 +123,7 @@ app.get('/api/:servicename/servicetime', [
 });
 
 app.put('/api/:servicename/updatetime', IsLoggedIn, [
-  body('servicename').isAlpha().isLength({ min: 1 }),
+  body('servicename').isString().isLength({ min: 1 }),
   body("servicetime").isInt({ min: 0 })
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -184,7 +184,7 @@ app.get('/api/services/:id', [
 
 //Is invoked when a client request a new service
 app.post('/api/tickets/add', [
-  body("servicename").isAlpha().isLength({ min: 1 })
+  body("servicename").isString().isLength({ min: 1 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -207,6 +207,28 @@ app.post('/api/tickets/add', [
 );
 
 //Get next ticket
+app.get('/api/tickets', async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).json({ errors: errors.array() });
+  } else {
+    try {
+      const getWaitingTickets = await tickets.GetWaitingTickets();
+      res.json(getWaitingTickets);
+    } catch (err) {
+      if (err == 0) {
+        res.status(503).json({ error: `There is not waiting tickets.` });
+      } else {
+        console.log(err)
+        res.status(503).json({ error: `Database error during extract tickets.` });
+      }
+    }
+  }
+}
+);
+
+//Get next ticket
 app.get('/api/tickets/:servicename', [
   param('servicename').isAlpha().isLength({ min: 1 })
 ], async (req, res) => {
@@ -220,7 +242,7 @@ app.get('/api/tickets/:servicename', [
         servicename: req.params.servicename,
         starttime: JSON.stringify(dayjs())
       }
-      const getNextTicket = await tickets.getNextTicket(ticket);
+      const getNextTicket = await tickets.GetNextTicket(ticket);
       res.json(getNextTicket);
     } catch (err) {
       if (err == 0) {

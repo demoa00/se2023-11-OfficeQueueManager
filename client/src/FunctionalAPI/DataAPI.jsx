@@ -47,6 +47,18 @@ async function NewTicket(servicename) {
         });
 }
 
+async function GetWaitingTickets() {
+    const response = await fetch(URL + `/tickets`, { credentials: 'include' });
+    const obj = await response.json();
+    if (response.ok) {
+        let tickets = obj.map((o) => ({ id: o.id, servicename: o.servicename, requesttime: dayjs(JSON.parse(o.requesttime)), starttime: dayjs(JSON.parse(o.starttime)), endtime: dayjs(JSON.parse(o.endtime)) }))
+
+        return tickets;
+    } else {
+        throw obj;
+    }
+}
+
 async function GetNextTicket(servicename) {
     const response = await fetch(URL + `/tickets/${servicename}`, { credentials: 'include' });
     const obj = await response.json();
