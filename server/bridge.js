@@ -8,16 +8,16 @@ const db = new sqlite.Database('DemoDataBase.sqlite', (err) => {
 });
 
 
-exports.GetNumberOfServicePerOfficier = (id) => {
+exports.GetNumberOfServicePerOfficer = (id) => {
     return new Promise((resolve, reject) => {
-        const sql ='SELECT officier_id, COUNT() as numservices FROM Bridge WHERE officier_id IN (SELECT officier_id FROM Bridge WHERE service_id = ?) GROUP BY officier_id';
+        const sql ='SELECT officer_id, COUNT() as numservices FROM Bridge WHERE officer_id IN (SELECT officer_id FROM Bridge WHERE service_id = ?) GROUP BY officer_id';
         db.all(sql, [id], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
             const numservices = rows.map((e) => ({
-                id: e.officier_id,
+                id: e.officer_id,
                 numservices: e.numservices
             }
             ));

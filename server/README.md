@@ -1,64 +1,43 @@
 # DATABASE : 
+
 ## Services :
 This table is about the services of the office.
 ### Attributes:
-- ServiceID: Integer identifier (unique by default -> list length)
-- ServiceName: Name of the service (unique if possible to avoid any misunderstanding)
-- ServiceTime: these values are set by default. If the Admin wants to change them, he should have a dedicated query to update them 
-## Officer :
+- id: Integer identifier (unique by default -> list length)
+- servicename: Name of the service (unique if possible to avoid any misunderstanding)
+- servicetime: these values are set by default. If the Admin wants to change them, he should have a dedicated query to update them 
+
+## Officers :
 This table represent the HR of the organization.
 ### Attributes:
-- OfficerID: Integer identifier for the row 
-- Name 
-- Surname
-- Email: All the emails are in the format: "[name].[surname]@email.com"
-- Password: Encrypted 32-byte password 
-- Salt: Key to decrypt the password
-- IsAdmin: Binary flag to identify the administrator(s)
-- Services: List of services each officier is able to serve. Empty by default. These data should have the JSON format: {services: [list of services]; };
+- id: Integer identifier for the row 
+- name 
+- surname
+- email: All the emails are in the format: "[name].[surname]@email.com"
+- password: Encrypted 32-byte password 
+- salt: Random number
+- admin: Binary flag to identify the administrator(s)
+
 #### NOTE:
 The password is "password" for everybody.
-## Ticket Served :
+
+## Bridge :
+This table contains the services performed by the officers.
+### Attributes:
+- officer_id: Officer identifier
+- service_id: Service identifier 
+
+## TicketsServed :
 This table should store all the ticket served. Empty by default.
 ### Attributes:
-- TicketID: Ticket identifier
-- ServiceName: Related to the name stored in the "Services" table, must be the same in order to sort the tickets served during a period of time
-- ServiceTime: Time acquired from the "Services" table
-- RealTime: Effective amount of time required to serve a client
+- id: Ticket identifier
+- servicename: Related to the name stored in the "Services" table, must be the same in order to sort the tickets served during a period of time
+- starttime: customer service processing start time
+- endtime: customer service processing end time 
 
-# Index.js Funcionalities : 
-## GetServiceName : 
-### Route :
-- '/api/services'
-### Parameters :
-This function doesn't recieve any parameter
-### Results: 
-It returns a list of ServiceName, should be called when the display of the services is required (es: the list for the ticket creation)
-
-## GetServiceTime :
-### Route :
-- '/api/:servicename/servicetime'
-### Parameters : 
-- ServiceName : recieved to find the time associated to a certain service
-### Results:
-It returns the time associated to a service
-
-## SetNewServiceTime :
-### Route :
-- '/api/:servicename/updatetime'
-### Parameters :
-- Service : Object containing 2 fields {time, serviceName (research keyfor the tuple) }
-### Results :
-Update the time associated to a service
-
-## AddService : 
-### Route :
-- '/api/services/add'
-### Parameters :
-- Service : Object containing 2 fields {time, serviceName}
-### Results :
-Add a service into a new row, in a complete implementation should control that the serviceName, is not present yet and throw an error
-https://universal-meadow-271131.postman.co/workspace/3b089187-f90b-4e4d-8014-310a332a3a45/documentation/27363631-4a96304a-ec0b-4f76-b35e-ddc1226963db
+# API documentation
+API documentation is available at this link: 
+https://universal-meadow-271131.postman.co/workspace/Team-Workspace~3b089187-f90b-4e4d-8014-310a332a3a45/collection27363631-4a96304a-ec0b-4f76-b35e-ddc1226963db?action=share&creator=27363631
 
 # POSSIBLE IMPLEMENTATIONS:
 Related to the problem given and all his stories some ideas are given below for the API implementation:
