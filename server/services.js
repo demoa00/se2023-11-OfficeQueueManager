@@ -17,7 +17,8 @@ exports.GetServicesName = () => {
             }
             const services = rows.map((e) => ({
                 id: e.id,
-                servicename: e.servicename
+                servicename: e.servicename,
+                servicetime: e.servicetime
             }
             ));
             resolve(services);

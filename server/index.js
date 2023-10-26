@@ -119,7 +119,7 @@ app.get('/api/:servicename/servicetime', [
     .catch(() => res.status(500).end())
 });
 
-app.put('/api/updatetime?servicename=value', IsLoggedIn, [
+app.put('/api/:servicename', IsLoggedIn, [
   param('servicename').isAlpha().isLength({ min: 1 }),
   body("servicetime").isInt({ min: 0 })
 ], async (req, res) => {

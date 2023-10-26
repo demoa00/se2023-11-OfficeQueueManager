@@ -6,6 +6,7 @@ async function GetServicesName() {
     if (response.ok) {
         return services.map((e) => ({
             servicename: e.servicename,
+            servicetime: e.servicetime
         }))
     } else {
         throw services;
