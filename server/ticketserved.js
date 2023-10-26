@@ -36,8 +36,8 @@ exports.GetWaitingTickets = () => {
             }
 
             let tickets = rows.map((r) => ({
-                id: r.id, servicename: r.servicename, requesttime: dayjs(JSON.parse(r.requesttime)), starttime: dayjs(JSON.parse(r.starttime)), endtime: dayjs(JSON.parse(r.endtime))
-            })).sort((a, b) => a.requesttime.diff(b.requesttime)).pop();
+                id: r.id, servicename: r.servicename, requesttime: dayjs(JSON.parse(r.requesttime))
+            })).sort((a, b) => a.requesttime.diff(b.requesttime));
 
             resolve(tickets);
         });

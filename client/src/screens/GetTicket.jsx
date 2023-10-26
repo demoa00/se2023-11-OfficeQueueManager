@@ -42,7 +42,7 @@ function GetTicket(props) {
   }
 
   return (
-    <Container className=''>
+    <Container className='vh-100'>
       <Row className='mb-5'>
         <Col xs={12} className='text-center'>
           <h1 >

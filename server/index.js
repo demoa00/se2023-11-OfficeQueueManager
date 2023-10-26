@@ -215,6 +215,7 @@ app.get('/api/tickets', async (req, res) => {
   } else {
     try {
       const getWaitingTickets = await tickets.GetWaitingTickets();
+      console.log("getWaitingTickets", getWaitingTickets)
       res.json(getWaitingTickets);
     } catch (err) {
       if (err == 0) {
@@ -230,7 +231,7 @@ app.get('/api/tickets', async (req, res) => {
 
 //Get next ticket
 app.get('/api/tickets/:servicename', [
-  param('servicename').isAlpha().isLength({ min: 1 })
+  param('servicename').isString().isLength({ min: 1 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

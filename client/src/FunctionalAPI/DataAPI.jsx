@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 const URL = 'http://localhost:3001/api';
 
 async function GetServicesName() {
@@ -51,7 +53,7 @@ async function GetWaitingTickets() {
     const response = await fetch(URL + `/tickets`, { credentials: 'include' });
     const obj = await response.json();
     if (response.ok) {
-        let tickets = obj.map((o) => ({ id: o.id, servicename: o.servicename, requesttime: dayjs(JSON.parse(o.requesttime)), starttime: dayjs(JSON.parse(o.starttime)), endtime: dayjs(JSON.parse(o.endtime)) }))
+    let tickets = obj.map((o) => ({ id: o.id, servicename: o.servicename, requesttime: dayjs(o.requesttime) }))
 
         return tickets;
     } else {
@@ -108,6 +110,6 @@ async function GetNumberOfServicePerOfficier(id) {
     }
 }
 
-const DataAPI = { GetServicesName, GetServiceTime, SetNewServiceTime, NewTicket, GetNextTicket, UpdateTicket, DeleteTicket, GetNumberOfServicePerOfficier };
+const DataAPI = { GetServicesName, GetWaitingTickets, GetServiceTime, SetNewServiceTime, NewTicket, GetNextTicket, UpdateTicket, DeleteTicket, GetNumberOfServicePerOfficier };
 
 export default DataAPI;
