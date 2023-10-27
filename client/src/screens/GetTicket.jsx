@@ -13,25 +13,23 @@ function GetTicket(props) {
   const [ticket, setTicket] = useState(null)
 
   const navigate = useNavigate()
-  
-  useEffect(()=>{
-    DataAPI.GetServicesName().then((s)=>{
-      console.log(s)
+
+  useEffect(() => {
+    DataAPI.GetServicesName().then((s) => {
       setServices(s)
-    }).catch((err)=>{
+    }).catch((err) => {
       console.log(err)
     })
   }, [])
 
-  function getTicket () {
-    DataAPI.NewTicket(selectedService.servicename).then((ticket)=>{
-        console.log("ticket", ticket)
-        setTicket(ticket)
-        setShowModal(true)
-        setTimeout(()=>{
-          navigate('/queue')
-        }, 5000)
-    }).catch((err)=>{
+  function getTicket() {
+    DataAPI.NewTicket(selectedService.servicename).then((ticket) => {
+      setTicket(ticket)
+      setShowModal(true)
+      setTimeout(() => {
+        setShowModal(false)
+      }, 5000)
+    }).catch((err) => {
       console.log(err)
     })
   }
@@ -47,24 +45,24 @@ function GetTicket(props) {
       </Row>
       <Row>
         {
-          services && services.map((service, index)=>{
+          services && services.map((service, index) => {
             return (
-              <Col xs={4} 
+              <Col xs={4}
                 key={index}
                 className='mb-4'
-                onMouseEnter={()=>{setHoveredService(service)}} 
-                onMouseLeave={()=>{setHoveredService(null)}} 
-                onClick={()=>{selectedService !== service ? setSelectedService(service) : setSelectedService(null)}}>
-                  <div className={`serviceContainer ${hoveredService === service ? 'hovered' : ''} ${selectedService === service ? 'selected' : ''}`}>
-                    <h2>{service.servicename}</h2>
-                  </div>
+                onMouseEnter={() => { setHoveredService(service) }}
+                onMouseLeave={() => { setHoveredService(null) }}
+                onClick={() => { selectedService !== service ? setSelectedService(service) : setSelectedService(null) }}>
+                <div className={`serviceContainer ${hoveredService === service ? 'hovered' : ''} ${selectedService === service ? 'selected' : ''}`}>
+                  <h2>{service.servicename}</h2>
+                </div>
               </Col>
             )
           })
         }
       </Row>
       <div className='buttonsContainer'>
-        <Button variant='outline-danger' className='me-3' onClick={()=>setSelectedService(null)}>Cancel</Button>
+        <Button variant='outline-danger' className='me-3' onClick={() => setSelectedService(null)}>Cancel</Button>
         <Button variant='success' disabled={!!!selectedService} onClick={getTicket}>Continue</Button>
       </div>
       <Modal
@@ -72,7 +70,7 @@ function GetTicket(props) {
         centered>
         <Modal.Body className='text-center'>
           <h2>Your ticket is number:</h2>
-          <h1 style={{"fontSize": "64px"}}>{!!ticket ? ticket.number : ''}</h1>
+          <h1 style={{ "fontSize": "64px" }}>{!!ticket ? ticket.number : ''}</h1>
         </Modal.Body>
       </Modal>
     </Container>

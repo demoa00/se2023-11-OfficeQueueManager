@@ -22,39 +22,28 @@ function Queue(props) {
     const [queue, setQueue] = useState([]);
     const [services, setServices] = useState([]);
 
-    // setInterval(() => {
     useEffect(() => {
-        DataAPI.GetWaitingTickets()
-        .then((tickets) => {
-            console.log(tickets)
-            setQueue(tickets)
-        })
-        .catch((err) => { console.log(err) });
-        DataAPI.GetServicesName().then((services) => {
-            setServices(services);
-        }).catch((err) => { console.log(err) });
-    }, [])
-    // }, 50000);
-
-    const navigate = useNavigate();
-
-    let service = "SPID";
-
-    useEffect(() => {
-        /* WAIT FOR API */
-    },
-        [queue]
-    );
-
+        setInterval(() => {
+            DataAPI.GetWaitingTickets()
+                .then((tickets) => {
+                    console.log(tickets)
+                    setQueue(tickets)
+                })
+                .catch((err) => { console.log(err) });
+            DataAPI.GetServicesName().then((services) => {
+                setServices(services);
+            }).catch((err) => { console.log(err) });
+        }, 5000);
+    })
 
     return <>
         <Container className="d-flex flex-column" fluid>
-            <Container style={{"height": "100vh", "overflow": "auto"}} fluid className="d-flex flex-column justify-content-between p-4">
-                <Row style={{"height": "100%", "overflow": "auto"}}>
+            <Container style={{ "height": "100vh", "overflow": "auto" }} fluid className="d-flex flex-column justify-content-between p-4">
+                <Row style={{ "height": "100%", "overflow": "auto" }}>
                     {services.map((service, i) => {
-                        return(
+                        return (
                             <Col xs={2} className="px-4 text-center">
-                                <h3 style={{height: '70px'}}>{service.servicename}</h3>
+                                <h3 style={{ height: '70px' }}>{service.servicename}</h3>
                                 <div>
                                     {queue.filter(e => e.servicename == service.servicename).map((q, i) => {
                                         return (
@@ -69,21 +58,6 @@ function Queue(props) {
                         )
                     })}
                 </Row>
-                <Row>
-                    <Col className="d-flex flex-row justify-content-center" xs={12}>
-                        {/* <Button onClick={() => nextTicket(3)}>
-                            next client
-                        </Button>
-                        <Button onClick={() => addTicket({ id_ticket: queue.length + 1, client: "francesca", insertTime: dayjs() })}>
-                            add client
-                        </Button>
-                        <Button onClick={() => deleteTicket(3)}>
-                            delete client
-                        </Button> */}
-                        <Button className="mt-4" onClick={() => navigate('/getTicket')}>Get Ticket</Button>
-                    </Col>
-                </Row>
-
             </Container>
         </Container>
     </>;
