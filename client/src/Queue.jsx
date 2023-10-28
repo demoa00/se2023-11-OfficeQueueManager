@@ -43,7 +43,7 @@ function Queue(props) {
                     {services.map((service, i) => {
                         return (
                             <Col xs={2} className="px-4 text-center">
-                                <h3 style={{ height: '70px' }}>{service.servicename}</h3>
+                                <h5 style={{ height: '70px' }}>{service.servicename}</h5>
                                 <div>
                                     {queue.filter(e => e.servicename == service.servicename).map((q, i) => {
                                         return (
