@@ -215,7 +215,6 @@ app.get('/api/tickets', async (req, res) => {
   } else {
     try {
       const getWaitingTickets = await tickets.GetWaitingTickets();
-      console.log("getWaitingTickets", getWaitingTickets)
       res.json(getWaitingTickets);
     } catch (err) {
       if (err == 0) {

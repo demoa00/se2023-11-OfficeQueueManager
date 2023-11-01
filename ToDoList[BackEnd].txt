@@ -1,3 +1,0 @@
-- Adding the exrpress-validator controls
-- Check functionalities
-- Write the API.jsx file in the client
